@@ -1,13 +1,21 @@
 using iss_location_ingestor.Services;
 
-IHost host = Host.CreateDefaultBuilder(args)
-    .ConfigureAppConfiguration((context, builder) => builder.AddJsonFile("appsettings.Development.json", true).AddJsonFile("appsettings.local.json", true).AddEnvironmentVariables())               
-    .ConfigureServices(services =>
-    {
-        services.AddSingleton<TleCache>();
-        services.AddSingleton<EventHubSender>();
-        services.AddHostedService<IssPositionPropagator>();
-    })
-    .Build();
+var builder = WebApplication.CreateBuilder(args);
 
-await host.RunAsync();
+if(builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddJsonFile("appsettings.local.json", optional: true, reloadOnChange: true);
+}
+
+builder.Configuration.AddEnvironmentVariables();
+builder.Services.AddSingleton<TleCache>();
+builder.Services.AddSingleton<EventHubSender>();
+builder.Services.AddHostedService<IssPositionPropagator>();
+builder.Services.AddControllers();
+
+var app = builder.Build();
+
+app.UseHttpsRedirection();
+app.UseAuthorization();
+app.MapControllers();
+app.Run();
