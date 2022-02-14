@@ -1,0 +1,11 @@
+﻿{
+  "profiles": {
+    "iss_location_ingestor": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
