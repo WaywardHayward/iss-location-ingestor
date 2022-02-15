@@ -13,9 +13,9 @@ namespace iss_location_ingestor.Model
 
         public string TimeStamp {get; internal set;}    = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
 
-        public string NoradName {get;set;}
+        public string NoradName {get;set;} = "ISS";
 
-        public string NoradID {get;set;}
+        public string NoradID {get;set;} = "25544";
     }
 
 }
