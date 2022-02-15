@@ -1,3 +1,4 @@
+using System.Diagnostics.Metrics;
 using iss_location_ingestor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +9,8 @@ if(builder.Environment.IsDevelopment())
 }
 
 builder.Configuration.AddEnvironmentVariables();
+
+builder.Services.AddSingleton(m => new Meter("iss.ingestor", "v1.0"));
 builder.Services.AddSingleton<TleCache>();
 builder.Services.AddSingleton<EventHubSender>();
 builder.Services.AddHostedService<IssPositionPropagator>();

@@ -1,24 +1,29 @@
+using System.Diagnostics.Metrics;
 using System.Text;
 using Azure.Messaging.EventHubs;
 using Azure.Messaging.EventHubs.Producer;
 
 namespace iss_location_ingestor.Services
 {
-     public class EventHubSender
+    public class EventHubSender
     {
         private readonly string _connectionString;
         private readonly string _eventHubName;
         private EventHubProducerClient _eventHubClient;
         private readonly Timer _batchTimer;
+        private readonly Counter<int> _batchSentCounter;
+        private readonly Counter<int> _batchFailCounter;
         private readonly ILogger<EventHubSender> _logger;
 
-        public EventHubSender(ILogger<EventHubSender> logger, IConfiguration configuration)
+        public EventHubSender(ILogger<EventHubSender> logger, IConfiguration configuration, Meter meter)
         {
             _logger = logger;
             _connectionString = configuration["EVENT_HUB_CONNECTION_STRING"];
             _eventHubName = configuration["EVENT_HUB_NAME"];
             _eventHubClient = new EventHubProducerClient(_connectionString, _eventHubName);
             _batchTimer = new Timer(SendPartialBatch, null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
+            _batchSentCounter = meter.CreateCounter<int>("BatchesSent");
+            _batchFailCounter = meter.CreateCounter<int>("BatchesFailed");
         }
 
         private Queue<string> _messageQueue = new Queue<string>();
@@ -67,14 +72,14 @@ namespace iss_location_ingestor.Services
 
                     for (int i = 0; i < messagesToDequeue; i++)
                     {
-                        if(_messageQueue.Count == 0) break;
+                        if (_messageQueue.Count == 0) break;
                         messages.Add(new EventData(Encoding.UTF8.GetBytes(_messageQueue.Dequeue())));
                     }
 
                 }
 
                 _eventHubClient.SendAsync(messages).Wait();
-
+                _batchSentCounter.Add(1);
                 _logger.LogInformation("Sent Batch: " + batchId);
                 _lastSendTime = DateTime.UtcNow;
 
@@ -82,6 +87,7 @@ namespace iss_location_ingestor.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
+                _batchFailCounter.Add(1);
             }
         }
     }

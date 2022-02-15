@@ -12,6 +12,10 @@ namespace iss_location_ingestor.Model
         public string Public_PUI { get; internal set; } = "GroundPosition";
 
         public string TimeStamp {get; internal set;}    = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+
+        public string NoradName {get;set;}
+
+        public string NoradID {get;set;}
     }
 
 }
