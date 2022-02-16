@@ -8,6 +8,7 @@ namespace iss_location_ingestor.Services
     public class EventHubSender
     {
         private readonly string _connectionString;
+        private readonly int _batchSendInterval;
         private readonly string _eventHubName;
         private EventHubProducerClient _eventHubClient;
         private readonly Timer _batchTimer;
@@ -19,6 +20,7 @@ namespace iss_location_ingestor.Services
         {
             _logger = logger;
             _connectionString = configuration["EVENT_HUB_CONNECTION_STRING"];
+            _batchSendInterval = int.TryParse(configuration["BATCH_SEND_INTERVAL"], out var batchSendInterval) ? batchSendInterval : 30;
             _eventHubName = configuration["EVENT_HUB_NAME"];
             _eventHubClient = new EventHubProducerClient(_connectionString, _eventHubName);
             _batchTimer = new Timer(SendPartialBatch, null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
@@ -31,7 +33,7 @@ namespace iss_location_ingestor.Services
 
         private void SendPartialBatch(object state)
         {
-            if (_lastSendTime > DateTime.UtcNow.AddSeconds(-30)) return;
+            if (_lastSendTime > DateTime.UtcNow.AddSeconds(-1*_batchSendInterval)) return;
             SendBatch();
         }
 

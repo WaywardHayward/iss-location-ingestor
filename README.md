@@ -5,6 +5,7 @@ A worker app to calculate the Lat long position of ISS and send that to an event
 
 | Setting | Description |
 | --- | --- |
+| `BATCH_SEND_INTERVAL` | The interval in seconds to send the batch of events to the event hub if a batch has not been filled |
 | `LLH_PROPAGATION_INTERVAL` | How offen to calculate the satellite's Lat Lon Altitude |
 | `TLE_REFRESH_INTERVAL` | How offen to refresh the TLE data from `TLE_URL`|
 | `TLE_URL` | The URL to fetch the TLE data from  defaults to https://www.celestrak.com/NORAD/elements/stations.txt |
