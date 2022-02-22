@@ -42,7 +42,8 @@ public class IssPositionPropagator : BackgroundService
 
     private void EmitPosition(Tle tle)
     {
-        EpochTime startTime = new EpochTime(DateTime.UtcNow);
+        var now = DateTime.UtcNow;
+        EpochTime startTime = new EpochTime(now);
         var data = SatFunctions.getSatPositionAtTime(tle, startTime,  Sgp4.wgsConstant.WGS_84);
         _logger.Log(LogLevel.Information, "Emitted position {data.x} {data.y} {data.z}", data.getX(), data.getY(), data.getZ());
         var ll = SatFunctions.calcSatSubPoint(startTime,  data, Sgp4.wgsConstant.WGS_84); 
@@ -56,7 +57,7 @@ public class IssPositionPropagator : BackgroundService
             Altitude = ll.getHeight(),
             NoradName = tle.getName(),
             NoradID = tle.getNoradID().Trim(),
-            TimeStamp = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
+            TimeStamp = now.ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
         }));
         _locationsPropagated.Add(1);
     }
