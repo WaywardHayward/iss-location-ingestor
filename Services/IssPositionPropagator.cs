@@ -1,5 +1,6 @@
 
 using System.Diagnostics.Metrics;
+using iss_location_ingestor.Services.Face;
 using iss_location_ingestor.Model;
 using Newtonsoft.Json;
 using One_Sgp4;
@@ -12,13 +13,13 @@ public class IssPositionPropagator : BackgroundService
     private readonly string _noradId;
     private readonly int _timeoutSeconds;
     private readonly int _tleRefreshInterval;
-    private readonly EventHubSender _sender;
+    private readonly IUpstreamSender _sender;
     private readonly Counter<int> _locationsPropagated;
     public IConfiguration _config;
     private DateTime _lastTleRefresh;
     private readonly TleCache _tles;
 
-    public IssPositionPropagator(ILogger<IssPositionPropagator> logger, IConfiguration config, TleCache tles, EventHubSender sender, Meter meter)
+    public IssPositionPropagator(ILogger<IssPositionPropagator> logger, IConfiguration config, TleCache tles, IUpstreamSender sender, Meter meter)
     {
         _tles = tles;
         _config = config;
