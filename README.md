@@ -1,4 +1,5 @@
 # ISS Location Ingestor
+[![Build](https://github.com/WaywardHayward/iss-location-ingestor/actions/workflows/dotnet.yml/badge.svg)](https://github.com/WaywardHayward/iss-location-ingestor/actions/workflows/dotnet.yml)
 A worker app to calculate the Lat long position of ISS and send that to an Azure Event Hub or an Azure IoT Hub for processing.
 
 ## Settings and Configuration
